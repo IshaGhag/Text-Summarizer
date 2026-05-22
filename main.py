@@ -8,14 +8,14 @@ st.set_page_config(layout="wide")
 
 @st.cache_resource()
 def load_summarizer():
-    return pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
+    return pipeline("text2text-generation", model="facebook/bart-large-cnn")
 
 def text_summary(text):
     summarizer = load_summarizer()
     # Split long text into chunks of 1000 chars
     max_chunk = 1000
     chunks = [text[i:i+max_chunk] for i in range(0, len(text), max_chunk)]
-    summary = " ".join([summarizer(chunk, max_length=150, min_length=30, do_sample=False)[0]['summary_text'] for chunk in chunks])
+    summary = " ".join([summarizer(chunk, max_length=150, min_length=30)[0]['generated_text'] for chunk in chunks])
     return summary
 
 def extract_text_from_pdf(file):
