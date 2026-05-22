@@ -1,88 +1,75 @@
 import streamlit as st
-from txtai.pipeline import Summary
+from transformers import pipeline
 from PyPDF2 import PdfReader
 import requests
+from bs4 import BeautifulSoup
 
 st.set_page_config(layout="wide")
 
-@st.cache_data()
-def text_summary(text, maxlength=None):
-    # Create summary instance
-    summary = Summary()
-    result = summary(text)
-    return result
+@st.cache_resource()
+def load_summarizer():
+    return pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
 
-def extract_text_from_pdf(file_path):
-    # Open the PDF file using PyPDF2
-    try:
-        with open(file_path, "rb") as f:
-            reader = PdfReader(f)
-            page = reader.pages[0]
-            text = page.extract_text()
-        return text
-    except Exception as e:
-        print("Error extracting text from PDF:", e)
-        return None
+def text_summary(text):
+    summarizer = load_summarizer()
+    # Split long text into chunks of 1000 chars
+    max_chunk = 1000
+    chunks = [text[i:i+max_chunk] for i in range(0, len(text), max_chunk)]
+    summary = " ".join([summarizer(chunk, max_length=150, min_length=30, do_sample=False)[0]['summary_text'] for chunk in chunks])
+    return summary
+
+def extract_text_from_pdf(file):
+    reader = PdfReader(file)
+    text = ""
+    for page in reader.pages:
+        text += page.extract_text()
+    return text
 
 def fetch_text_from_url(url):
-    # Fetch text from URL
     response = requests.get(url)
-    if response.status_code == 200:
-        return response.text
-    else:
-        return None
+    soup = BeautifulSoup(response.text, "html.parser")
+    paragraphs = soup.find_all("p")
+    return " ".join([p.get_text() for p in paragraphs])
 
+st.title("Text Summarizer")
 choice = st.sidebar.selectbox("Select your choice", ["Summarize Text", "Summarize Document"])
 
 if choice == "Summarize Text":
     st.subheader("Summarize Text")
     input_text = st.text_area("Enter your text here")
-    if input_text is not None:
-        if st.button("Summarize Text"):
-            col1, col2 = st.columns([1,1])
-            with col1:
-                st.markdown("**Your Input Text**")
-                st.info(input_text)
-            with col2:
-                st.markdown("**Summary Result**")
-                result = text_summary(input_text)
-                st.success(result)
+    if st.button("Summarize Text"):
+        col1, col2 = st.columns([1,1])
+        with col1:
+            st.markdown("**Your Input Text**")
+            st.info(input_text)
+        with col2:
+            st.markdown("**Summary Result**")
+            result = text_summary(input_text)
+            st.success(result)
 
 elif choice == "Summarize Document":
     st.subheader("Summarize Document")
     upload_option = st.radio("Choose upload method", ("Upload PDF", "Input URL"))
-    
     if upload_option == "Upload PDF":
         input_file = st.file_uploader("Upload your document here", type=['pdf'])
-        if input_file is not None:
-            if st.button("Summarize Document"):
-                with open("doc_file.pdf", "wb") as f:
-                    f.write(input_file.getbuffer())
-                col1, col2 = st.columns([1,1])
-                with col1:
-                    st.info("File uploaded successfully")
-                    extracted_text = extract_text_from_pdf("doc_file.pdf")
-                    print("Extracted Text:", extracted_text)  # Debugging statement
-                    st.markdown("**Extracted Text is Below:**")
-                    st.info(extracted_text)
-                with col2:
-                    st.markdown("**Summary Result**")
-                    doc_summary = text_summary(extracted_text)
-                    st.success(doc_summary)
-    else: # Input URL
-        input_url = st.text_input("Enter the URL of the document")
-        if input_url:
-            if st.button("Summarize Document"):
-                text_from_url = fetch_text_from_url(input_url)
-                if text_from_url:
-                    col1, col2 = st.columns([1,1])
-                    with col1:
-                        st.info("Text fetched successfully")
-                        st.markdown("**Extracted Text is Below:**")
-                        st.info(text_from_url)
-                    with col2:
-                        st.markdown("**Summary Result**")
-                        doc_summary = text_summary(text_from_url)
-                        st.success(doc_summary)
-                else:
-                    st.error("Failed to fetch text from URL. Please check if the URL is correct or accessible.")
+        if input_file and st.button("Summarize Document"):
+            col1, col2 = st.columns([1,1])
+            with col1:
+                st.info("File uploaded successfully")
+                extracted_text = extract_text_from_pdf(input_file)
+                st.markdown("**Extracted Text:**")
+                st.info(extracted_text)
+            with col2:
+                st.markdown("**Summary Result**")
+                st.success(text_summary(extracted_text))
+    else:
+        input_url = st.text_input("Enter the URL")
+        if input_url and st.button("Summarize Document"):
+            text_from_url = fetch_text_from_url(input_url)
+            col1, col2 = st.columns([1,1])
+            with col1:
+                st.markdown("**Extracted Text:**")
+                st.info(text_from_url)
+            with col2:
+                st.markdown("**Summary Result**")
+                st.success(text_summary(text_from_url))
