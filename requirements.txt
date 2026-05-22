@@ -1,6 +1,6 @@
 streamlit
-transformers
-torch
+sumy
 PyPDF2
 requests
 beautifulsoup4
+nltk
