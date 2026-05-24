@@ -310,6 +310,7 @@ with st.sidebar:
 # ── PAGE HEADER ─────────────────────────────────────────────────
 st.markdown("""
 <div class="page-header">
+    <br>
     <p class="page-title">Text Summarizer</p>
     <p class="page-sub">Extract key information from any text, document or article</p>
 </div>
