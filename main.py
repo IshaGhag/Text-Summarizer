@@ -14,7 +14,6 @@ nltk.download('punkt', quiet=True)
 nltk.download('punkt_tab', quiet=True)
 nltk.download('stopwords', quiet=True)
 
-# ── PAGE CONFIG ──────────────────────────────────────────────────
 st.set_page_config(
     page_title="Text Summarizer",
     page_icon="📝",
@@ -22,197 +21,128 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ── CSS ─────────────────────────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 
-html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif;
-}
-
-/* Page background */
-.stApp {
-    background: #f9f7f4;
-}
+.stApp { background: #f9f7f4; }
 
 /* ── SIDEBAR ── */
-[data-testid="stSidebar"] {
-    background: #1c1c1e !important;
-}
+[data-testid="stSidebar"] { background: #1c1c1e !important; }
 [data-testid="stSidebar"] p,
 [data-testid="stSidebar"] label,
 [data-testid="stSidebar"] span,
-[data-testid="stSidebar"] div {
-    color: #e5e5e7 !important;
-}
+[data-testid="stSidebar"] div,
+[data-testid="stSidebar"] small { color: #e5e5e7 !important; }
 [data-testid="stSidebar"] h1,
 [data-testid="stSidebar"] h2,
-[data-testid="stSidebar"] h3 {
-    color: #ffffff !important;
-}
-/* Fix dropdown text visibility */
+[data-testid="stSidebar"] h3 { color: #ffffff !important; }
 [data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] > div {
-    background: #2c2c2e !important;
-    border-color: #3a3a3c !important;
-    color: #ffffff !important;
+    background: #2c2c2e !important; border-color: #3a3a3c !important;
 }
-[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] span {
-    color: #ffffff !important;
-}
-/* Fix text input visibility */
+[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] span { color: #ffffff !important; }
 [data-testid="stSidebar"] .stTextInput input {
-    background: #2c2c2e !important;
-    border: 1px solid #3a3a3c !important;
-    color: #ffffff !important;
-    border-radius: 8px !important;
+    background: #2c2c2e !important; border: 1px solid #3a3a3c !important;
+    color: #ffffff !important; border-radius: 8px !important;
 }
-[data-testid="stSidebar"] .stTextInput input::placeholder {
-    color: #8e8e93 !important;
-}
-/* Slider */
-[data-testid="stSidebar"] .stSlider [data-baseweb="slider"] {
-    margin-top: 8px;
-}
-/* Radio */
-[data-testid="stSidebar"] .stRadio label {
-    color: #e5e5e7 !important;
-}
-/* Divider */
-[data-testid="stSidebar"] hr {
-    border-color: #3a3a3c !important;
-}
+[data-testid="stSidebar"] .stTextInput input::placeholder { color: #8e8e93 !important; }
+[data-testid="stSidebar"] hr { border-color: #3a3a3c !important; }
 
-/* ── MAIN AREA ── */
+/* ── BLOCK CONTAINER ── */
 .block-container {
-    padding-top: 2rem !important;
+    padding-top: 2.5rem !important;
+    padding-bottom: 0 !important;
     max-width: 1200px;
 }
 
-/* Page title */
+/* ── PAGE HEADER ── */
+.page-header {
+    margin-bottom: 1.75rem;
+    border-bottom: 1px solid #e5e5ea;
+    padding-bottom: 1.25rem;
+}
 .page-title {
-    font-size: 1.75rem;
+    font-size: 1.6rem;
     font-weight: 700;
     color: #1c1c1e;
-    margin-bottom: 0.1rem;
+    margin: 0 0 0.2rem 0;
+    line-height: 1.2;
 }
 .page-sub {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     color: #6e6e73;
-    margin-bottom: 1.5rem;
+    margin: 0;
 }
 
-/* Text area */
+/* ── INPUT AREA ── */
 .stTextArea textarea {
     background: #ffffff !important;
     border: 1.5px solid #d1d1d6 !important;
     border-radius: 10px !important;
     font-size: 0.92rem !important;
     color: #1c1c1e !important;
-    line-height: 1.6 !important;
+    line-height: 1.65 !important;
 }
-.stTextArea textarea:focus {
-    border-color: #636366 !important;
-    box-shadow: 0 0 0 3px rgba(99,99,102,0.1) !important;
-}
-
-/* Summarize button */
-.stButton > button {
-    background: #1c1c1e !important;
-    color: #ffffff !important;
-    border: none !important;
-    border-radius: 8px !important;
-    font-weight: 600 !important;
-    font-size: 0.88rem !important;
-    padding: 0.55rem 1.75rem !important;
-    letter-spacing: 0.02em !important;
-    transition: opacity 0.15s !important;
-}
-.stButton > button:hover {
-    opacity: 0.82 !important;
-}
-
-/* Download buttons */
-.stDownloadButton > button {
+.stTextArea textarea:focus { border-color: #636366 !important; }
+.stTextInput input {
     background: #ffffff !important;
-    color: #1c1c1e !important;
     border: 1.5px solid #d1d1d6 !important;
-    border-radius: 8px !important;
-    font-weight: 500 !important;
-    font-size: 0.82rem !important;
-    padding: 0.4rem 1rem !important;
-}
-.stDownloadButton > button:hover {
-    border-color: #636366 !important;
+    border-radius: 10px !important;
+    font-size: 0.92rem !important;
+    color: #1c1c1e !important;
 }
 
-/* Cards */
+/* ── BUTTONS ── */
+.stButton > button {
+    background: #1c1c1e !important; color: #ffffff !important;
+    border: none !important; border-radius: 8px !important;
+    font-weight: 600 !important; font-size: 0.88rem !important;
+    padding: 0.55rem 1.75rem !important; letter-spacing: 0.01em !important;
+}
+.stButton > button:hover { opacity: 0.82 !important; }
+.stDownloadButton > button {
+    background: #ffffff !important; color: #1c1c1e !important;
+    border: 1.5px solid #d1d1d6 !important; border-radius: 8px !important;
+    font-weight: 500 !important; font-size: 0.82rem !important;
+}
+.stDownloadButton > button:hover { border-color: #636366 !important; }
+
+/* ── CARDS ── */
 .card {
-    background: #ffffff;
-    border: 1px solid #e5e5ea;
-    border-radius: 12px;
-    padding: 1.4rem 1.6rem;
-    margin-bottom: 1rem;
+    background: #ffffff; border: 1px solid #e5e5ea;
+    border-radius: 12px; padding: 1.3rem 1.5rem; margin-bottom: 1rem;
 }
-.card-title {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #8e8e93;
-    margin-bottom: 0.9rem;
+.card-label {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: #8e8e93; margin-bottom: 0.85rem;
 }
 
-/* Topic badge */
+/* ── TOPIC BADGE ── */
 .topic-badge {
-    display: inline-block;
-    background: #1c1c1e;
-    color: #ffffff;
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 4px 12px;
-    border-radius: 4px;
-    margin-bottom: 1.25rem;
+    display: inline-block; background: #1c1c1e; color: #ffffff;
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.07em;
+    text-transform: uppercase; padding: 4px 12px;
+    border-radius: 4px; margin-bottom: 1.25rem;
 }
 
-/* Word count bar */
+/* ── WORD COUNT BAR ── */
 .wc-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.82rem;
-    color: #3a3a3c;
-    margin-bottom: 6px;
+    display: flex; justify-content: space-between;
+    font-size: 0.82rem; color: #3a3a3c; margin-bottom: 6px;
 }
 .wc-bar-bg {
-    background: #f2f2f7;
-    border-radius: 99px;
-    height: 6px;
-    margin-bottom: 4px;
-    overflow: hidden;
+    background: #f2f2f7; border-radius: 99px;
+    height: 6px; overflow: hidden; margin-bottom: 4px;
 }
-.wc-bar-fill {
-    height: 6px;
-    border-radius: 99px;
-    background: #1c1c1e;
-}
-.wc-reduction {
-    font-size: 0.75rem;
-    color: #636366;
-    text-align: right;
-}
+.wc-bar-fill { height: 6px; border-radius: 99px; background: #1c1c1e; }
+.wc-note { font-size: 0.73rem; color: #8e8e93; text-align: right; }
 
-/* Keyword tags */
-.kw-wrap { margin-top: 0.5rem; line-height: 2.2; }
+/* ── KEYWORD TAGS ── */
+.kw-wrap { line-height: 2.4; }
 .kw-tag {
-    display: inline-block;
-    font-size: 0.75rem;
-    font-weight: 500;
-    padding: 3px 10px;
-    border-radius: 4px;
-    margin: 2px 3px;
-    border: 1px solid;
+    display: inline-block; font-size: 0.73rem; font-weight: 500;
+    padding: 3px 10px; border-radius: 4px; margin: 2px 3px; border: 1px solid;
 }
 .kw-a { background: #fff0f0; color: #c0392b; border-color: #f5c6c2; }
 .kw-b { background: #f0f4ff; color: #2c55a0; border-color: #c5d0f0; }
@@ -220,64 +150,58 @@ html, body, [class*="css"] {
 .kw-d { background: #fef9e7; color: #856404; border-color: #f0d98c; }
 .kw-e { background: #f5f0ff; color: #6f42c1; border-color: #d4bff0; }
 
-/* Summary text */
-.summary-para {
-    font-size: 0.93rem;
-    line-height: 1.85;
-    color: #1c1c1e;
-}
-
-/* Bullet list */
+/* ── SUMMARY OUTPUT ── */
+.summary-para { font-size: 0.92rem; line-height: 1.85; color: #1c1c1e; }
 .bullet-row {
-    display: flex;
-    gap: 12px;
-    padding: 9px 0;
-    border-bottom: 1px solid #f2f2f7;
-    align-items: flex-start;
+    display: flex; gap: 12px; padding: 9px 0;
+    border-bottom: 1px solid #f2f2f7; align-items: flex-start;
 }
 .bullet-row:last-child { border-bottom: none; }
 .bullet-num {
-    min-width: 22px; height: 22px;
-    background: #1c1c1e; color: white;
-    border-radius: 4px; font-size: 0.7rem; font-weight: 700;
+    min-width: 22px; height: 22px; background: #1c1c1e; color: white;
+    border-radius: 4px; font-size: 0.68rem; font-weight: 700;
     display: flex; align-items: center; justify-content: center;
     margin-top: 3px; flex-shrink: 0;
 }
-.bullet-text {
-    font-size: 0.9rem; line-height: 1.75; color: #1c1c1e;
+.bullet-text { font-size: 0.9rem; line-height: 1.75; color: #1c1c1e; }
+
+/* ── URL WARNING BOX ── */
+.url-note {
+    background: #fff8f0; border: 1px solid #f0d9b8;
+    border-radius: 8px; padding: 0.75rem 1rem;
+    font-size: 0.82rem; color: #7a4f00; margin-bottom: 1rem;
 }
 
-/* File uploader */
-[data-testid="stFileUploader"] {
-    background: #ffffff !important;
-    border: 1.5px dashed #d1d1d6 !important;
-    border-radius: 10px !important;
-    padding: 0.5rem !important;
+/* ── FOOTER ── */
+.site-footer {
+    margin-top: 4rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid #e5e5ea;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #8e8e93;
 }
+.site-footer a { color: #636366; text-decoration: none; }
+.site-footer a:hover { color: #1c1c1e; }
 
-/* Divider */
-hr { border-color: #e5e5ea !important; }
-
-/* Success / info boxes */
-.stAlert { border-radius: 8px !important; }
+hr { border-color: #e5e5ea !important; margin: 1.5rem 0 !important; }
 </style>
 """, unsafe_allow_html=True)
 
 
 # ── HELPERS ─────────────────────────────────────────────────────
-
 def count_words(text):
     return len(re.findall(r'\b\w+\b', text))
 
 def clean_text(text):
     text = re.sub(r'\s+', ' ', text)
-    text = re.sub(r'[^\w\s.,!?;:\'\"-]', '', text)
     return text.strip()
 
 def extract_keywords(text, top_n=15):
     from nltk.corpus import stopwords
     stop = set(stopwords.words('english'))
-    stop.update(['said','also','would','could','one','like','even','well','just','get','got','make','made','use'])
+    stop.update(['said','also','would','could','one','like','even','well','just',
+                 'get','got','make','made','use','upon','though','without','within'])
     words = re.findall(r'\b[a-zA-Z]{4,}\b', text.lower())
     filtered = [w for w in words if w not in stop]
     freq = Counter(filtered)
@@ -285,14 +209,22 @@ def extract_keywords(text, top_n=15):
 
 def detect_topic(text):
     topics = {
-        "Health & Medicine": ["health","medical","doctor","disease","patient","hospital","treatment","medicine","virus","cancer","drug","symptom","clinical","therapy","diagnosis"],
-        "Technology": ["technology","software","computer","data","algorithm","artificial","intelligence","machine","learning","digital","internet","code","programming","cyber","platform","system","model"],
-        "Finance & Business": ["financial","market","economy","business","investment","stock","revenue","profit","bank","fund","trade","economic","price","company","growth","earnings"],
-        "Sports": ["sport","game","player","team","match","tournament","league","score","coach","athlete","championship","win","goal","season","club"],
-        "Politics": ["government","political","election","president","minister","policy","law","democracy","parliament","vote","senator","congress","party","official"],
-        "Science": ["research","study","experiment","scientist","theory","evidence","discovery","biology","chemistry","physics","journal","findings","published"],
-        "Entertainment": ["movie","film","music","artist","celebrity","entertainment","award","album","actor","director","show","series","streaming"],
-        "Environment": ["climate","environment","carbon","emission","energy","sustainable","pollution","nature","ecosystem","warming","fossil","renewable"],
+        "Health & Medicine": ["health","medical","doctor","disease","patient","hospital",
+                               "treatment","medicine","virus","cancer","drug","symptom","clinical"],
+        "Technology": ["technology","software","computer","data","algorithm","artificial",
+                       "intelligence","machine","learning","digital","internet","programming","cyber"],
+        "Finance & Business": ["financial","market","economy","business","investment","stock",
+                                "revenue","profit","bank","fund","trade","economic","company"],
+        "Sports": ["sport","game","player","team","match","tournament","league",
+                   "score","coach","athlete","championship","win","goal"],
+        "Politics": ["government","political","election","president","minister","policy",
+                     "law","democracy","parliament","vote","senator","congress"],
+        "Science": ["research","study","experiment","scientist","theory","evidence",
+                    "discovery","biology","chemistry","physics","journal","findings"],
+        "Entertainment": ["movie","film","music","artist","celebrity","entertainment",
+                          "award","album","actor","director","show","series"],
+        "Environment": ["climate","environment","carbon","emission","energy","sustainable",
+                        "pollution","nature","ecosystem","warming","renewable"],
     }
     text_lower = text.lower()
     scores = {t: sum(text_lower.count(kw) for kw in kws) for t, kws in topics.items()}
@@ -300,66 +232,52 @@ def detect_topic(text):
     return best if scores[best] > 2 else "General"
 
 def summarize_text(text, num_sentences, focus=None):
-    """Use LexRank for better quality summaries, with focus boosting."""
     text = clean_text(text)
-
-    # If text is too short, just return it
-    words = count_words(text)
-    if words < 50:
+    if count_words(text) < 40:
         return [text]
 
-    # Focus boosting — reorder sentences to put focus-relevant ones first
     if focus and focus.strip():
         focus_words = focus.lower().split()
         sentences = re.split(r'(?<=[.!?])\s+', text)
-        scored = []
-        for s in sentences:
-            score = sum(s.lower().count(w) for w in focus_words)
-            scored.append((score, s))
-        scored.sort(reverse=True)
-        # Rebuild text with boosted sentences first
-        text = ' '.join(s for _, s in scored)
+        scored = sorted(sentences, key=lambda s: sum(s.lower().count(w) for w in focus_words), reverse=True)
+        text = ' '.join(scored)
 
     try:
         parser = PlaintextParser.from_string(text, Tokenizer("english"))
-        # Try LexRank first (better quality)
-        summarizer = LexRankSummarizer()
-        result = summarizer(parser.document, num_sentences)
+        result = LexRankSummarizer()(parser.document, num_sentences)
         sentences = [str(s) for s in result]
         if sentences:
             return sentences
     except Exception:
         pass
 
-    # Fallback to LSA
     try:
         parser = PlaintextParser.from_string(text, Tokenizer("english"))
-        summarizer = LsaSummarizer()
-        result = summarizer(parser.document, num_sentences)
-        return [str(s) for s in result]
+        result = LsaSummarizer()(parser.document, num_sentences)
+        sentences = [str(s) for s in result]
+        if sentences:
+            return sentences
     except Exception:
-        # Last resort: return first N sentences
-        sents = re.split(r'(?<=[.!?])\s+', text)
-        return sents[:num_sentences]
+        pass
+
+    sents = re.split(r'(?<=[.!?])\s+', text)
+    return sents[:num_sentences]
 
 def extract_pdf_text(file):
     reader = PdfReader(file)
-    pages_text = []
-    for page in reader.pages:
-        t = page.extract_text()
-        if t:
-            pages_text.append(t)
-    return " ".join(pages_text)
+    return " ".join(page.extract_text() or "" for page in reader.pages)
 
 def fetch_url_text(url):
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml',
+        'Accept-Language': 'en-US,en;q=0.9',
+    }
     resp = requests.get(url, headers=headers, timeout=15)
     resp.raise_for_status()
     soup = BeautifulSoup(resp.text, "html.parser")
-    # Remove nav, footer, scripts
-    for tag in soup(["script","style","nav","footer","header","aside","noscript"]):
+    for tag in soup(["script","style","nav","footer","header","aside","noscript","figure","figcaption"]):
         tag.decompose()
-    # Get article/main content first, fallback to all paragraphs
     article = soup.find("article") or soup.find("main") or soup
     paragraphs = article.find_all("p")
     text = " ".join(p.get_text(strip=True) for p in paragraphs if len(p.get_text(strip=True)) > 40)
@@ -373,11 +291,8 @@ def make_txt(sentences):
 with st.sidebar:
     st.markdown("### Text Summarizer")
     st.markdown("---")
-
     mode = st.selectbox("Input Type", ["Text", "PDF Document", "URL"])
-
     st.markdown("### Settings")
-
     length_label = st.select_slider(
         "Summary Length",
         options=["Short (3)", "Medium (5)", "Detailed (8)", "Comprehensive (12)"],
@@ -385,27 +300,28 @@ with st.sidebar:
     )
     length_map = {"Short (3)": 3, "Medium (5)": 5, "Detailed (8)": 8, "Comprehensive (12)": 12}
     num_sentences = length_map[length_label]
-
     output_mode = st.radio("Output Format", ["Paragraph", "Numbered List"])
-
     focus_on = st.text_input("Custom Focus", placeholder="e.g. financial impact")
-
     st.markdown("---")
-    st.markdown("<small style='color:#636366'>Summarize text, PDFs, or web articles. Extracts key phrases and detects topic automatically.</small>", unsafe_allow_html=True)
+    st.markdown("<small>Summarize text, PDFs, or web articles. Extracts key phrases and detects topic automatically.</small>",
+                unsafe_allow_html=True)
 
 
-# ── HEADER ──────────────────────────────────────────────────────
-st.markdown('<p class="page-title">Text Summarizer</p>', unsafe_allow_html=True)
-st.markdown('<p class="page-sub">Extract key information from any text, document or article</p>', unsafe_allow_html=True)
+# ── PAGE HEADER ─────────────────────────────────────────────────
+st.markdown("""
+<div class="page-header">
+    <p class="page-title">Text Summarizer</p>
+    <p class="page-sub">Extract key information from any text, document or article</p>
+</div>
+""", unsafe_allow_html=True)
 
 input_text = ""
 do_summarize = False
 
-# ── INPUT AREA ──────────────────────────────────────────────────
+# ── INPUT ────────────────────────────────────────────────────────
 if mode == "Text":
     input_text = st.text_area(
-        "Input text",
-        height=200,
+        "Input", height=200,
         placeholder="Paste any article, essay, report or document here...",
         label_visibility="collapsed"
     )
@@ -417,13 +333,16 @@ elif mode == "PDF Document":
         with st.spinner("Reading PDF..."):
             input_text = extract_pdf_text(uploaded)
         if input_text.strip():
-            st.caption(f"{count_words(input_text):,} words extracted from PDF")
+            st.caption(f"{count_words(input_text):,} words extracted")
             do_summarize = st.button("Summarize PDF")
         else:
-            st.error("Could not extract text from this PDF. It may be scanned or image-based.")
+            st.error("Could not extract text. This PDF may be image-based or scanned.")
 
 elif mode == "URL":
-    url = st.text_input("Article URL", placeholder="https://...", label_visibility="collapsed")
+    st.markdown("""<div class="url-note">
+        Note: Some websites block automated access (403 error). Try news sites like BBC, Reuters, Wikipedia, or Medium for best results.
+    </div>""", unsafe_allow_html=True)
+    url = st.text_input("Article URL", placeholder="https://en.wikipedia.org/wiki/...", label_visibility="collapsed")
     if url:
         do_summarize = st.button("Fetch & Summarize")
         if do_summarize:
@@ -431,19 +350,28 @@ elif mode == "URL":
                 try:
                     input_text = fetch_url_text(url)
                     if not input_text.strip():
-                        st.error("Could not extract content from this URL.")
+                        st.error("No readable text found on this page. Try pasting the text directly instead.")
                         do_summarize = False
+                except requests.exceptions.HTTPError as e:
+                    code = e.response.status_code if e.response else "?"
+                    if code == 403:
+                        st.error("This website blocks automated access (403). Please copy and paste the article text directly into the Text tab.")
+                    elif code == 404:
+                        st.error("Page not found (404). Please check the URL.")
+                    else:
+                        st.error(f"Could not fetch page (Error {code}). Try pasting the text directly instead.")
+                    do_summarize = False
                 except Exception as e:
-                    st.error(f"Failed to fetch URL: {str(e)}")
+                    st.error(f"Could not reach this URL. Try pasting the text directly instead.")
                     do_summarize = False
 
 
-# ── RESULTS ─────────────────────────────────────────────────────
+# ── RESULTS ──────────────────────────────────────────────────────
 if do_summarize and input_text and input_text.strip():
     original_wc = count_words(input_text)
 
     if original_wc < 30:
-        st.warning("Text is too short to summarize. Please provide at least a few paragraphs.")
+        st.warning("Text is too short to summarize meaningfully. Please provide at least a paragraph.")
     else:
         with st.spinner("Summarizing..."):
             sentences = summarize_text(input_text, num_sentences, focus_on)
@@ -454,67 +382,67 @@ if do_summarize and input_text and input_text.strip():
             topic = detect_topic(input_text)
 
         st.markdown("<hr>", unsafe_allow_html=True)
-
-        # Topic badge
         st.markdown(f'<div class="topic-badge">{topic}</div>', unsafe_allow_html=True)
 
         col1, col2 = st.columns([1, 1], gap="large")
 
-        # ── LEFT: Stats & Keywords ──
         with col1:
+            # Word count
             st.markdown('<div class="card">', unsafe_allow_html=True)
-            st.markdown('<div class="card-title">Word Count</div>', unsafe_allow_html=True)
+            st.markdown('<div class="card-label">Word Count</div>', unsafe_allow_html=True)
             bar_pct = max(4, 100 - reduction)
             st.markdown(f"""
             <div class="wc-row">
                 <span>Original: <strong>{original_wc:,} words</strong></span>
                 <span>Summary: <strong>{summary_wc:,} words</strong></span>
             </div>
-            <div class="wc-bar-bg">
-                <div class="wc-bar-fill" style="width:{bar_pct}%"></div>
-            </div>
-            <div class="wc-reduction">{reduction}% reduction</div>
+            <div class="wc-bar-bg"><div class="wc-bar-fill" style="width:{bar_pct}%"></div></div>
+            <div class="wc-note">{reduction}% reduction</div>
             """, unsafe_allow_html=True)
             st.markdown('</div>', unsafe_allow_html=True)
 
+            # Keywords
             st.markdown('<div class="card">', unsafe_allow_html=True)
-            st.markdown('<div class="card-title">Key Phrases</div>', unsafe_allow_html=True)
+            st.markdown('<div class="card-label">Key Phrases</div>', unsafe_allow_html=True)
             colors = ["kw-a","kw-b","kw-c","kw-d","kw-e"]
-            tags = "".join(
-                f'<span class="kw-tag {colors[i % len(colors)]}">{kw}</span>'
-                for i, kw in enumerate(keywords)
-            )
+            tags = "".join(f'<span class="kw-tag {colors[i%5]}">{kw}</span>' for i, kw in enumerate(keywords))
             st.markdown(f'<div class="kw-wrap">{tags}</div>', unsafe_allow_html=True)
             st.markdown('</div>', unsafe_allow_html=True)
 
             with st.expander("View original text"):
                 st.write(input_text[:4000] + ("..." if len(input_text) > 4000 else ""))
 
-        # ── RIGHT: Summary ──
         with col2:
+            # Summary output
             st.markdown('<div class="card">', unsafe_allow_html=True)
-            st.markdown('<div class="card-title">Summary</div>', unsafe_allow_html=True)
-
+            st.markdown('<div class="card-label">Summary</div>', unsafe_allow_html=True)
             if output_mode == "Numbered List":
-                html = ""
-                for i, s in enumerate(sentences):
-                    html += f'<div class="bullet-row"><div class="bullet-num">{i+1}</div><div class="bullet-text">{s}</div></div>'
+                html = "".join(
+                    f'<div class="bullet-row"><div class="bullet-num">{i+1}</div><div class="bullet-text">{s}</div></div>'
+                    for i, s in enumerate(sentences)
+                )
                 st.markdown(html, unsafe_allow_html=True)
             else:
                 st.markdown(f'<p class="summary-para">{summary_text}</p>', unsafe_allow_html=True)
-
             st.markdown('</div>', unsafe_allow_html=True)
 
-            # Action buttons
             b1, b2 = st.columns(2)
             with b1:
                 st.download_button(
-                    "Download .txt",
-                    data=make_txt(sentences),
-                    file_name="summary.txt",
-                    mime="text/plain",
+                    "Download .txt", data=make_txt(sentences),
+                    file_name="summary.txt", mime="text/plain",
                     use_container_width=True
                 )
             with b2:
-                copy_js = f"""<button onclick="navigator.clipboard.writeText(`{summary_text.replace('`','').replace(chr(10),' ')}`).then(()=>{{this.textContent='Copied';setTimeout(()=>this.textContent='Copy to Clipboard',2000)}})" style="width:100%;padding:0.45rem 0.5rem;background:#fff;color:#1c1c1e;border:1.5px solid #d1d1d6;border-radius:8px;font-size:0.82rem;font-weight:500;cursor:pointer;transition:border-color 0.15s;" onmouseover="this.style.borderColor='#636366'" onmouseout="this.style.borderColor='#d1d1d6'">Copy to Clipboard</button>"""
-                st.markdown(copy_js, unsafe_allow_html=True)
+                safe = summary_text.replace('`','').replace('\n',' ')
+                st.markdown(f"""<button onclick="navigator.clipboard.writeText(`{safe}`).then(()=>{{this.textContent='Copied';setTimeout(()=>this.textContent='Copy to Clipboard',2000)}})"
+                style="width:100%;padding:0.43rem 0.5rem;background:#fff;color:#1c1c1e;border:1.5px solid #d1d1d6;border-radius:8px;font-size:0.82rem;font-weight:500;cursor:pointer;"
+                onmouseover="this.style.borderColor='#636366'" onmouseout="this.style.borderColor='#d1d1d6'">Copy to Clipboard</button>""",
+                unsafe_allow_html=True)
+
+# ── FOOTER ───────────────────────────────────────────────────────
+st.markdown("""
+<div class="site-footer">
+    Made with ♥ by <strong>Isha Ghag</strong> &nbsp;|&nbsp;
+</div>
+""", unsafe_allow_html=True)
