@@ -16,7 +16,6 @@ nltk.download('stopwords', quiet=True)
 
 st.set_page_config(
     page_title="Text Summarizer",
-    page_icon="📝",
     layout="wide",
     initial_sidebar_state="expanded"
 )
